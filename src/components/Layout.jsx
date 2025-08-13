@@ -13,7 +13,7 @@ function Layout() {
 					<Link to="/enter-numbers">
 						<Button name="Enter Numbers"></Button>
 					</Link>
-					<Link to="/previous-tres">
+					<Link to="/previous-trees">
 						<Button name="Previous Trees"></Button>
 					</Link>
 				</nav>
