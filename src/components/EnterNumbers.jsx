@@ -3,9 +3,9 @@ import { useState, useRef, useEffect } from "react";
 // Enter numbers into a box, then send that list of numbers to the API
 
 function EnterNumbers() {
-	const [numberArray, setNumberArray] = useState([]);
+	const [numberArray, setNumberArray] = useState(["Empty"]);
 
-	const [currentNumber, setCurrentNumber] = useState();
+	const [currentNumber, setCurrentNumber] = useState("");
 
 	const [errorMessage, setErrorMessage] = useState({
 		type: "empty",
@@ -28,8 +28,10 @@ function EnterNumbers() {
 
 		if (errorMessage.type != "empty") {
 			setTimeout(() => {
-				setErrorMessage({ type: "empty", message: "" });
-			}, 5000);
+				setErrorMessage(() => {
+					return { type: "empty", message: "" };
+				});
+			}, 10000);
 		}
 	}, [errorMessage]);
 
@@ -40,23 +42,29 @@ function EnterNumbers() {
 	}, [root]);
 
 	const handleNumberChange = (event) => {
-		event.preventDefault();
-		setCurrentNumber(event.target.value);
+		setCurrentNumber(() => event.target.value);
 	};
 
 	const handleNumberSubmit = (event) => {
 		event.preventDefault();
 		if (isNaN(currentNumber)) {
-			setErrorMessage({
-				type: "error",
-				message: "ERR: Not A Number.",
+			setErrorMessage(() => {
+				return {
+					type: "error",
+					message: "ERR: Not A Number.",
+				};
 			});
 		} else {
-			setErrorMessage({
-				type: "empty",
-				message: "",
+			setErrorMessage(() => {
+				return { type: "empty", message: "" };
 			});
-			setNumberArray(numberArray.push(currentNumber));
+			if (numberArray[0] === "Empty") {
+				setNumberArray(() => [parseFloat(currentNumber)]);
+			} else {
+				setNumberArray((previous) =>
+					previous.concat(parseFloat(currentNumber))
+				);
+			}
 		}
 	};
 
@@ -71,9 +79,11 @@ function EnterNumbers() {
 			.then((response) => response.json())
 			.then((data) => setRoot(data))
 			.catch((error) =>
-				setErrorMessage({
-					type: "error",
-					message: "ERR: " + error,
+				setErrorMessage(() => {
+					return {
+						type: "error",
+						message: "ERR: " + error,
+					};
 				})
 			);
 	};
@@ -89,16 +99,20 @@ function EnterNumbers() {
 			.then((response) => response.json())
 			.then((data) => setRoot(data))
 			.catch((error) =>
-				setErrorMessage({
-					type: "error",
-					message: "ERR: " + error,
+				setErrorMessage(() => {
+					return {
+						type: "error",
+						message: "ERR: " + error,
+					};
 				})
 			);
 	};
 
 	const handleArrayReset = (event) => {
 		event.preventDefault();
-		setNumberArray([]);
+		setNumberArray(() => {
+			return ["Empty"];
+		});
 	};
 
 	return (
@@ -118,22 +132,22 @@ function EnterNumbers() {
 					value={currentNumber}
 					onChange={handleNumberChange}
 				/>
-				<input type="submit" />
+				<button type="submit">Submit Number</button>
 			</form>
 			<p>
 				Current numbers:
-				{numberArray.map((number, index) => {
-					return number + ", ";
+				{numberArray.map((value) => {
+					return value + ", ";
 				})}
 			</p>
 			<form onSubmit={handleArraySubmit}>
-				<input type="submit" />
+				<button type="submit">Create Binary Search Tree</button>
 			</form>
 			<form onSubmit={handleArraySubmitBalance}>
-				<input type="submit" />
+				<button type="submit">Create Balanced Binary Search Tree</button>
 			</form>
 			<form onReset={handleArrayReset}>
-				<input type="reset" />
+				<button type="reset">Reset Numbers</button>
 			</form>
 			<div className="treebox" ref={tree}></div>
 		</main>
