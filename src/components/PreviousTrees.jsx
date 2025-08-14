@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from "react";
+import TreeNode from "./TreeNode";
 
 // Get trees from API
 
 function PreviousTrees() {
 	const [trees, setTrees] = useState([]);
-
-	const tree = useRef(null);
 
 	const [errorMessage, setErrorMessage] = useState({
 		type: "empty",
@@ -40,7 +39,9 @@ function PreviousTrees() {
 			headers: { "Content-Type": "application/json" },
 		})
 			.then((response) => response.json())
-			.then((data) => setTrees(data))
+			.then((data) => {
+				setTrees(data);
+			})
 			.catch((error) =>
 				setErrorMessage(() => {
 					return {
@@ -49,8 +50,6 @@ function PreviousTrees() {
 					};
 				})
 			);
-
-		tree.current.innerHTML = `<p>${trees}</p>`;
 	}, []);
 
 	return (
@@ -58,7 +57,22 @@ function PreviousTrees() {
 			<h2>Previous Trees</h2>
 			<p>These trees are from all prior uses of this app.</p>
 			<div className="alertbox" ref={alert}></div>
-			<div className="treebox" ref={tree}></div>
+			<div className="treebox">
+				{trees.length === 0 ? (
+					<p>Loading trees...</p>
+				) : (
+					trees.map((tree, i) => (
+						<div key={tree.id || i}>
+							<p>Tree Height: {tree.treeHeight}</p>
+							<p>Input Numbers: {tree.inputNumbers.join(", ")}</p>
+							<h3>Tree:</h3>
+							<div className="tree">
+								<TreeNode node={tree.rootNode} />
+							</div>
+						</div>
+					))
+				)}
+			</div>
 		</main>
 	);
 }
