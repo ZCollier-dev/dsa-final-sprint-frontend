@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import TreeNode from "./TreeNode";
 
 // Enter numbers into a box, then send that list of numbers to the API
 
@@ -38,7 +39,13 @@ function EnterNumbers() {
 	const tree = useRef(null);
 
 	useEffect(() => {
-		tree.current.innerHTML = `<p>${root}</p>`;
+		!root
+			? null
+			: (tree.current.innerHTML = `<p>Tree Height: ${root.treeHeight}</p>
+		<p>Input Numbers:</p><p>${root.inputNumbers.map((value) => {
+			return " " + value;
+		})}</p>
+		<h3>Tree:</h3>`);
 	}, [root]);
 
 	const handleNumberChange = (event) => {
@@ -86,6 +93,7 @@ function EnterNumbers() {
 					};
 				})
 			);
+		console.log(root);
 	};
 
 	const handleArraySubmitBalance = (event) => {
@@ -134,8 +142,8 @@ function EnterNumbers() {
 				/>
 				<button type="submit">Submit Number</button>
 			</form>
+			<p>Current numbers:</p>
 			<p>
-				Current numbers:
 				{numberArray.map((value) => {
 					return value + ", ";
 				})}
@@ -150,6 +158,7 @@ function EnterNumbers() {
 				<button type="reset">Reset Numbers</button>
 			</form>
 			<div className="treebox" ref={tree}></div>
+			{!root ? null : <TreeNode node={root.rootNode} />}
 		</main>
 	);
 }
